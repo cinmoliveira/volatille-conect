@@ -47,27 +47,27 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions web = FirebaseOptions(
-    apiKey: 'AIzaSyDKZ5RVtY9kD98aCIWQCq3Exm65Hs_DvnI',
-    appId: '1:601179809013:web:bc23ffb8f4e11428fc51bc',
-    messagingSenderId: '601179809013',
+    apiKey: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    appId: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    messagingSenderId: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
     projectId: 'covs-fatec',
     authDomain: 'covs-fatec.firebaseapp.com',
     storageBucket: 'covs-fatec.firebasestorage.app',
-    measurementId: 'G-0YHR2801Q9',
+    measurementId: 'G-XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
   );
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyC1SMjiPlEWCiCbks7EVGIFfxMBygWLo5o',
-    appId: '1:601179809013:android:6d8c63a45c79ad23fc51bc',
-    messagingSenderId: '601179809013',
+    apiKey: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    appId: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    messagingSenderId: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
     projectId: 'covs-fatec',
     storageBucket: 'covs-fatec.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyAVSOPZUBEkFn9_Lv2zOkCNBmSzosyX4iM',
-    appId: '1:601179809013:ios:97db830efa069ef6fc51bc',
-    messagingSenderId: '601179809013',
+    apiKey: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    appId: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
+    messagingSenderId: 'XXXXXXXXXXXXXXXXXXXXXXXXXXXXXXX',
     projectId: 'covs-fatec',
     storageBucket: 'covs-fatec.firebasestorage.app',
     iosBundleId: 'com.example.volatileConnect',
