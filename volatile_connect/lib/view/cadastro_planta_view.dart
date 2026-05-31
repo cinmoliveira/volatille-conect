@@ -19,7 +19,7 @@ class _CadastroPlantaViewState extends State<CadastroPlantaView> {
   final _compostosController = TextEditingController();
   final _insetosController = TextEditingController();
 
-  void _salvar() {
+  void _salvar() async {
     if (_formKey.currentState!.validate()) {
       final novaPlanta = Planta(
         nome: _nomeController.text.trim(),
@@ -27,43 +27,102 @@ class _CadastroPlantaViewState extends State<CadastroPlantaView> {
         categoria: _categoriaController.text.trim(),
         imagem: '',
         descricao: _descricaoController.text.trim(),
-        compostos: _compostosController.text.split(',').map((e) => e.trim()).toList(),
-        insetos: _insetosController.text.split(',').map((e) => e.trim()).toList(),
+        compostos: _compostosController.text
+            .split(',')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList(),
+        insetos: _insetosController.text
+            .split(',')
+            .map((e) => e.trim())
+            .where((e) => e.isNotEmpty)
+            .toList(),
       );
 
-      GetIt.I<VolatileController>().adicionarPlanta(novaPlanta);
-      Navigator.pop(context);
+      final sucesso = await GetIt.I<VolatileController>().adicionarPlanta(
+        context,
+        novaPlanta,
+      );
+
+      if (sucesso) {
+        Navigator.pop(context);
+      }
     }
   }
 
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Novo Registro"), backgroundColor: const Color(0xFF1B3D2F), foregroundColor: Colors.white),
+      appBar: AppBar(
+        title: const Text("Novo Registro"),
+        backgroundColor: const Color(0xFF1B3D2F),
+        foregroundColor: Colors.white,
+      ),
       body: SingleChildScrollView(
         padding: const EdgeInsets.all(20.0),
         child: Form(
           key: _formKey,
           child: Column(
             children: [
-              TextFormField(controller: _nomeController, decoration: const InputDecoration(labelText: "Nome Comum", border: OutlineInputBorder()), validator: (v) => v!.isEmpty ? "Obrigatório" : null),
+              TextFormField(
+                controller: _nomeController,
+                decoration: const InputDecoration(
+                  labelText: "Nome Comum",
+                  border: OutlineInputBorder(),
+                ),
+                validator: (v) => v!.isEmpty ? "Obrigatório" : null,
+              ),
               const SizedBox(height: 15),
-              TextFormField(controller: _cientificoController, decoration: const InputDecoration(labelText: "Nome Científico", border: OutlineInputBorder())),
+              TextFormField(
+                controller: _cientificoController,
+                decoration: const InputDecoration(
+                  labelText: "Nome Científico",
+                  border: OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 15),
-              TextFormField(controller: _categoriaController, decoration: const InputDecoration(labelText: "Categoria", border: OutlineInputBorder())),
+              TextFormField(
+                controller: _categoriaController,
+                decoration: const InputDecoration(
+                  labelText: "Categoria",
+                  border: OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 15),
-              TextFormField(controller: _descricaoController, maxLines: 3, decoration: const InputDecoration(labelText: "Descrição", border: OutlineInputBorder())),
+              TextFormField(
+                controller: _descricaoController,
+                maxLines: 3,
+                decoration: const InputDecoration(
+                  labelText: "Descrição",
+                  border: OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 15),
-              TextFormField(controller: _compostosController, decoration: const InputDecoration(labelText: "Compostos (sep. por vírgula)", border: OutlineInputBorder())),
+              TextFormField(
+                controller: _compostosController,
+                decoration: const InputDecoration(
+                  labelText: "Compostos (sep. por vírgula)",
+                  border: OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 15),
-              TextFormField(controller: _insetosController, decoration: const InputDecoration(labelText: "Insetos (sep. por vírgula)", border: OutlineInputBorder())),
+              TextFormField(
+                controller: _insetosController,
+                decoration: const InputDecoration(
+                  labelText: "Insetos (sep. por vírgula)",
+                  border: OutlineInputBorder(),
+                ),
+              ),
               const SizedBox(height: 30),
               SizedBox(
                 width: double.infinity,
                 height: 50,
                 child: ElevatedButton(
                   onPressed: _salvar,
-                  style: ElevatedButton.styleFrom(backgroundColor: const Color(0xFF1B3D2F), foregroundColor: Colors.white),
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: const Color(0xFF1B3D2F),
+                    foregroundColor: Colors.white,
+                  ),
                   child: const Text("SALVAR PLANTA"),
                 ),
               ),
@@ -72,5 +131,16 @@ class _CadastroPlantaViewState extends State<CadastroPlantaView> {
         ),
       ),
     );
+  }
+
+  @override
+  void dispose() {
+    _nomeController.dispose();
+    _cientificoController.dispose();
+    _categoriaController.dispose();
+    _descricaoController.dispose();
+    _compostosController.dispose();
+    _insetosController.dispose();
+    super.dispose();
   }
 }

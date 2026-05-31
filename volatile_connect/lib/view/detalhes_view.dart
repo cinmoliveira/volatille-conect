@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import '../model/planta.dart';
+import '../service/imagem_service.dart';
 
 class DetalhesView extends StatelessWidget {
   const DetalhesView({super.key});
@@ -29,17 +30,51 @@ class DetalhesView extends StatelessWidget {
       body: SingleChildScrollView(
         child: Column(
           children: [
-            // tratar a imagem para não falhar no layout
-            Image.asset(
-              planta.imagem, 
-              width: double.infinity, 
-              height: 250, 
-              fit: BoxFit.cover,
-              errorBuilder: (context, error, stackTrace) {
+            FutureBuilder(
+              future: ImagemService().buscarImagem(planta.nomeCientifico),
+              builder: (context, snapshot) {
+                if (snapshot.connectionState == ConnectionState.waiting) {
+                  return const SizedBox(
+                    width: double.infinity,
+                    height: 250,
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: Color(0xFF1B3D2F),
+                      ),
+                    ),
+                  );
+                }
+
+                if (snapshot.hasData &&
+                    snapshot.data != null &&
+                    snapshot.data!.url.isNotEmpty) {
+                  return Image.network(
+                    snapshot.data!.url,
+                    width: double.infinity,
+                    height: 250,
+                    fit: BoxFit.cover,
+                    errorBuilder: (context, error, stackTrace) {
+                      return Container(
+                        height: 250,
+                        color: Colors.grey[300],
+                        child: const Icon(
+                          Icons.eco,
+                          size: 80,
+                          color: Color(0xFF1B3D2F),
+                        ),
+                      );
+                    },
+                  );
+                }
+
                 return Container(
                   height: 250,
                   color: Colors.grey[300],
-                  child: const Icon(Icons.eco, size: 80, color: Color(0xFF1B3D2F)),
+                  child: const Icon(
+                    Icons.eco,
+                    size: 80,
+                    color: Color(0xFF1B3D2F),
+                  ),
                 );
               },
             ),
@@ -49,13 +84,13 @@ class DetalhesView extends StatelessWidget {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Text(
-                    planta.nomeCientifico, 
+                    planta.nomeCientifico,
                     style: const TextStyle(
-                      fontSize: 22, 
+                      fontSize: 22,
                       fontStyle: FontStyle.italic,
                       fontWeight: FontWeight.bold,
-                      color: Color(0xFF1B3D2F)
-                    )
+                      color: Color(0xFF1B3D2F),
+                    ),
                   ),
                   const SizedBox(height: 10),
                   Text(
@@ -64,16 +99,22 @@ class DetalhesView extends StatelessWidget {
                   ),
                   const Divider(height: 30),
                   const Text(
-                    'Compostos Orgânicos Voláteis:', 
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
+                    'Compostos Orgânicos Voláteis:',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
-                  Text(planta.compostos.join(', '), style: const TextStyle(fontSize: 15)),
+                  Text(
+                    planta.compostos.join(', '),
+                    style: const TextStyle(fontSize: 15),
+                  ),
                   const SizedBox(height: 15),
                   const Text(
-                    'Insetos Relacionados:', 
-                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16)
+                    'Insetos Relacionados:',
+                    style: TextStyle(fontWeight: FontWeight.bold, fontSize: 16),
                   ),
-                  Text(planta.insetos.join(', '), style: const TextStyle(fontSize: 15)),
+                  Text(
+                    planta.insetos.join(', '),
+                    style: const TextStyle(fontSize: 15),
+                  ),
                 ],
               ),
             ),

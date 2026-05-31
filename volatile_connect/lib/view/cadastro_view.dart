@@ -21,7 +21,7 @@ class _CadastroViewState extends State<CadastroView> {
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
   }
 
-  void _processarCadastro() {
+  void _processarCadastro() async {
     final nome = _nomeController.text.trim();
     final email = _emailController.text.trim();
     final telefone = _telefoneController.text.trim();
@@ -47,16 +47,40 @@ class _CadastroViewState extends State<CadastroView> {
       return;
     }
 
-    GetIt.I<AuthController>().cadastrar(nome, email, telefone, senha);
-
     ScaffoldMessenger.of(context).showSnackBar(
       const SnackBar(
-        content: Text("Cadastro realizado com sucesso!"),
+        content: Text("Criando conta..."),
         backgroundColor: Color(0xFF1B3D2F),
+        behavior: SnackBarBehavior.floating,
       ),
     );
 
-    Navigator.pop(context);
+    final resultado = await GetIt.I<AuthController>().cadastrar(
+      nome,
+      email,
+      telefone,
+      senha,
+    );
+
+    if (resultado == "sucesso") {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text("Cadastro realizado com sucesso!"),
+          backgroundColor: Color(0xFF1B3D2F),
+          behavior: SnackBarBehavior.floating,
+        ),
+      );
+
+      Navigator.pop(context);
+    } else if (resultado == "email_ja_cadastrado") {
+      _exibirErro("Este e-mail já está em uso.");
+    } else if (resultado == "email_invalido") {
+      _exibirErro("E-mail inválido.");
+    } else if (resultado == "senha_fraca") {
+      _exibirErro("A senha deve conter pelo menos 6 caracteres.");
+    } else {
+      _exibirErro("Não foi possível realizar o cadastro.");
+    }
   }
 
   void _exibirErro(String mensagem) {
@@ -76,8 +100,6 @@ class _CadastroViewState extends State<CadastroView> {
         title: const Text("Novo Cadastro"),
         backgroundColor: const Color(0xFF1B3D2F),
         foregroundColor: Colors.white,
-
-        // 🔥 BOTÃO VOLTAR EM PT-BR
         leading: IconButton(
           icon: const Icon(Icons.arrow_back),
           tooltip: 'Voltar',
@@ -86,16 +108,17 @@ class _CadastroViewState extends State<CadastroView> {
           },
         ),
       ),
-
       body: SingleChildScrollView(
         child: Padding(
           padding: const EdgeInsets.all(30.0),
           child: Column(
             children: [
-              const Icon(Icons.person_add_alt_1_outlined,
-                  size: 80, color: Color(0xFF1B3D2F)),
+              const Icon(
+                Icons.person_add_alt_1_outlined,
+                size: 80,
+                color: Color(0xFF1B3D2F),
+              ),
               const SizedBox(height: 20),
-
               TextField(
                 controller: _nomeController,
                 decoration: const InputDecoration(
@@ -103,9 +126,7 @@ class _CadastroViewState extends State<CadastroView> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 20),
-
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
@@ -114,9 +135,7 @@ class _CadastroViewState extends State<CadastroView> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 20),
-
               TextField(
                 controller: _telefoneController,
                 keyboardType: TextInputType.phone,
@@ -125,9 +144,7 @@ class _CadastroViewState extends State<CadastroView> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 20),
-
               TextField(
                 controller: _senhaController,
                 obscureText: _isObscured,
@@ -135,17 +152,15 @@ class _CadastroViewState extends State<CadastroView> {
                   labelText: "Senha",
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    icon: Icon(_isObscured
-                        ? Icons.visibility_off
-                        : Icons.visibility),
+                    icon: Icon(
+                      _isObscured ? Icons.visibility_off : Icons.visibility,
+                    ),
                     onPressed: () =>
                         setState(() => _isObscured = !_isObscured),
                   ),
                 ),
               ),
-
               const SizedBox(height: 20),
-
               TextField(
                 controller: _confirmarSenhaController,
                 obscureText: _isObscured,
@@ -154,9 +169,7 @@ class _CadastroViewState extends State<CadastroView> {
                   border: OutlineInputBorder(),
                 ),
               ),
-
               const SizedBox(height: 30),
-
               SizedBox(
                 width: double.infinity,
                 height: 55,

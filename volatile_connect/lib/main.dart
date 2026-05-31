@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get_it/get_it.dart';
 import 'package:device_preview_plus/device_preview_plus.dart';
+import 'package:firebase_core/firebase_core.dart';
+
+import 'firebase_options.dart';
 
 import 'controller/auth_controller.dart';
 import 'controller/volatile_controller.dart';
@@ -14,8 +17,15 @@ import 'view/cadastro_planta_view.dart';
 import 'view/editar_planta_view.dart';
 import 'view/detalhes_view.dart';
 import 'view/referencias_view.dart';
+import 'view/pesquisa_view.dart';
 
-void main() {
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
+
   final getIt = GetIt.instance;
 
   // Registro dos Singletons
@@ -69,6 +79,7 @@ class MyApp extends StatelessWidget {
         'cadastro_planta': (context) => const CadastroPlantaView(),
         'editar_planta': (context) => const EditarPlantaView(),
         'referencias': (context) => const ReferenciasView(),
+        'pesquisa': (context) => const PesquisaView(),
       },
     );
   }

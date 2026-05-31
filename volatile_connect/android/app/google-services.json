@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "601179809013",
+    "project_id": "covs-fatec",
+    "storage_bucket": "covs-fatec.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:601179809013:android:dac1e6b3eefa17f6fc51bc",
+        "android_client_info": {
+          "package_name": "com.example.app_exemplo_firebase"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1SMjiPlEWCiCbks7EVGIFfxMBygWLo5o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:601179809013:android:6d8c63a45c79ad23fc51bc",
+        "android_client_info": {
+          "package_name": "com.example.volatile_connect"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyC1SMjiPlEWCiCbks7EVGIFfxMBygWLo5o"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

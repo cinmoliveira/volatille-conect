@@ -1,61 +1,131 @@
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
+import 'package:get_it/get_it.dart';
+
 import '../model/planta.dart';
+import 'auth_controller.dart';
 
 class VolatileController extends ChangeNotifier {
-  // Lista com as imagens da rota assets\images
-  final List<Planta> _plantas = [
-    Planta(
-      nome: 'Tomateiro',
-      nomeCientifico: 'Solanum lycopersicum',
-      categoria: 'Olerícola',
-      imagem: 'assets/images/tomate.jpg',
-      descricao: 'Planta modelo para estudos de defesa indireta e emissão de voláteis induzidos por herbivoria.',
-      compostos: ['(Z)-3-hexenil acetato', 'Terpenoides', 'Metil salicilato'],
-      insetos: ['Manduca sexta', 'Encarsia formosa'],
-    ),
-    Planta(
-      nome: 'Macieira',
-      nomeCientifico: 'Malus domestica',
-      categoria: 'Frutífera',
-      imagem: 'assets/images/macieira.jpg',
-      descricao: 'Emite voláteis que atraem predadores naturais de ácaros e lagartas fitófagas.',
-      compostos: ['E-beta-farneseno', 'Linalool'],
-      insetos: ['Cydia pomonella', 'Apis mellifera'],
-    ),
-    Planta(
-      nome: 'Milho',
-      nomeCientifico: 'Zea mays',
-      categoria: 'Cereal',
-      imagem: 'assets/images/milho.jpg',
-      descricao: 'Famoso pela emissão de voláteis das raízes e folhas para atrair nematoides predadores e vespas parasitoides.',
-      compostos: ['Cariofileno', 'Indol', 'Homoterpenos'],
-      insetos: ['Spodoptera frugiperda', 'Cotesia marginiventris'],
-    ),
-    Planta(
-      nome: 'Soja',
-      nomeCientifico: 'Glycine max',
-      categoria: 'Oleaginosa',
-      imagem: 'assets/images/soja.jpg',
-      descricao: 'Planta de grande importância econômica com respostas complexas a percevejos fitófagos.',
-      compostos: ['(E)-2-hexenal', '1-octen-3-ol'],
-      insetos: ['Euschistus heros', 'Telenomus podisi'],
-    ),
-  ];
+  final FirebaseFirestore db = FirebaseFirestore.instance;
 
-  List<Planta> get plantas => _plantas;
+  Stream<QuerySnapshot<Map<String, dynamic>>> listarPlantas() {
+    final uid = GetIt.I<AuthController>().idUsuario();
 
-  void adicionarPlanta(Planta planta) {
-    _plantas.add(planta);
-    notifyListeners();
+    return db
+        .collection('plantas')
+        .where('uid', isEqualTo: uid)
+        .snapshots();
   }
 
-  void removerPlanta(int index) {
-    _plantas.removeAt(index);
-    notifyListeners();
+  Stream<QuerySnapshot<Map<String, dynamic>>> pesquisarPlantas() {
+    final uid = GetIt.I<AuthController>().idUsuario();
+
+    return db
+        .collection('plantas')
+        .where('uid', isEqualTo: uid)
+        .snapshots();
   }
 
-  void editarPlanta(int index, Planta plantaEditada) {
-    _plantas[index] = plantaEditada;
-    notifyListeners();
+  Future<bool> adicionarPlanta(BuildContext context, Planta planta) async {
+    try {
+      final uid = GetIt.I<AuthController>().idUsuario();
+
+      if (uid == null) {
+        _exibirErro(context, 'Usuário não autenticado.');
+        return false;
+      }
+
+      final plantaFirestore = Planta(
+        uid: uid,
+        nome: planta.nome,
+        nomeCientifico: planta.nomeCientifico,
+        categoria: planta.categoria,
+        imagem: planta.imagem,
+        descricao: planta.descricao,
+        compostos: planta.compostos,
+        insetos: planta.insetos,
+      );
+
+      await db.collection('plantas').add(plantaFirestore.toJson());
+
+      _exibirSucesso(context, 'Planta cadastrada com sucesso!');
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _exibirErro(context, 'Erro ao cadastrar planta.');
+      return false;
+    }
+  }
+
+  Future<bool> editarPlanta(
+    BuildContext context,
+    String id,
+    Planta plantaEditada,
+  ) async {
+    try {
+      final uid = GetIt.I<AuthController>().idUsuario();
+
+      if (uid == null) {
+        _exibirErro(context, 'Usuário não autenticado.');
+        return false;
+      }
+
+      final plantaFirestore = Planta(
+        uid: uid,
+        nome: plantaEditada.nome,
+        nomeCientifico: plantaEditada.nomeCientifico,
+        categoria: plantaEditada.categoria,
+        imagem: plantaEditada.imagem,
+        descricao: plantaEditada.descricao,
+        compostos: plantaEditada.compostos,
+        insetos: plantaEditada.insetos,
+      );
+
+      await db.collection('plantas').doc(id).update(plantaFirestore.toJson());
+
+      _exibirSucesso(context, 'Planta atualizada com sucesso!');
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _exibirErro(context, 'Erro ao atualizar planta.');
+      return false;
+    }
+  }
+
+  Future<bool> removerPlanta(
+    BuildContext context,
+    String id,
+    String nome,
+  ) async {
+    try {
+      await db.collection('plantas').doc(id).delete();
+
+      _exibirSucesso(context, '$nome removido com sucesso!');
+      notifyListeners();
+      return true;
+    } catch (e) {
+      _exibirErro(context, 'Erro ao remover planta.');
+      return false;
+    }
+  }
+
+  void _exibirSucesso(BuildContext context, String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensagem),
+        backgroundColor: const Color(0xFF1B3D2F),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+  }
+
+  void _exibirErro(BuildContext context, String mensagem) {
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(
+        content: Text(mensagem),
+        backgroundColor: const Color(0xFFD32F2F),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
   }
 }

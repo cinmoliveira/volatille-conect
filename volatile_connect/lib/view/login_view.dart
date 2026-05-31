@@ -18,7 +18,7 @@ class _LoginViewState extends State<LoginView> {
     return RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$').hasMatch(email);
   }
 
-  void _processarLogin() {
+  void _processarLogin() async {
     final email = _emailController.text.trim();
     final senha = _senhaController.text.trim();
 
@@ -32,17 +32,31 @@ class _LoginViewState extends State<LoginView> {
       return;
     }
 
+    ScaffoldMessenger.of(context).showSnackBar(
+      const SnackBar(
+        content: Text("Realizando login..."),
+        backgroundColor: Color(0xFF1B3D2F),
+        behavior: SnackBarBehavior.floating,
+      ),
+    );
+
     final authController = GetIt.I<AuthController>();
-    final resultado = authController.validarLogin(email, senha);
+    final resultado = await authController.validarLogin(email, senha);
 
     if (resultado == "sucesso") {
       Navigator.pushReplacementNamed(context, 'home');
-    } 
-    else if (resultado == "usuario_inexistente") {
-      _exibirMensagem("Credenciais desconhecidas. Cadastre-se para acessar.");
-    } 
-    else if (resultado == "senha_incorreta") {
+    } else if (resultado == "usuario_inexistente") {
+      _exibirMensagem("Usuário não encontrado. Cadastre-se para acessar.");
+    } else if (resultado == "senha_incorreta") {
       _exibirMensagem("Senha incorreta. Verifique e tente novamente.");
+    } else if (resultado == "email_invalido") {
+      _exibirMensagem("O e-mail informado é inválido.");
+    } else if (resultado == "credenciais_invalidas") {
+      _exibirMensagem("E-mail ou senha incorretos.");
+    } else if (resultado == "usuario_desativado") {
+      _exibirMensagem("Este usuário foi desativado.");
+    } else {
+      _exibirMensagem("Não foi possível realizar o login.");
     }
   }
 
@@ -65,16 +79,27 @@ class _LoginViewState extends State<LoginView> {
           child: Column(
             children: [
               const SizedBox(height: 80),
-              const Icon(Icons.biotech, size: 80, color: Color(0xFF1B3D2F)),
+              const Icon(
+                Icons.biotech,
+                size: 80,
+                color: Color(0xFF1B3D2F),
+              ),
               const Text(
                 'VolatileConnect',
-                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold, color: Color(0xFF1B3D2F)),
+                style: TextStyle(
+                  fontSize: 28,
+                  fontWeight: FontWeight.bold,
+                  color: Color(0xFF1B3D2F),
+                ),
               ),
               const SizedBox(height: 50),
               TextField(
                 controller: _emailController,
                 keyboardType: TextInputType.emailAddress,
-                decoration: const InputDecoration(labelText: 'E-mail', border: OutlineInputBorder()),
+                decoration: const InputDecoration(
+                  labelText: 'E-mail',
+                  border: OutlineInputBorder(),
+                ),
               ),
               const SizedBox(height: 20),
               TextField(
@@ -84,15 +109,19 @@ class _LoginViewState extends State<LoginView> {
                   labelText: 'Senha',
                   border: const OutlineInputBorder(),
                   suffixIcon: IconButton(
-                    icon: Icon(_isObscured ? Icons.visibility_off : Icons.visibility),
-                    onPressed: () => setState(() => _isObscured = !_isObscured),
+                    icon: Icon(
+                      _isObscured ? Icons.visibility_off : Icons.visibility,
+                    ),
+                    onPressed: () =>
+                        setState(() => _isObscured = !_isObscured),
                   ),
                 ),
               ),
               Align(
                 alignment: Alignment.centerRight,
                 child: TextButton(
-                  onPressed: () => Navigator.pushNamed(context, 'recuperar_senha'),
+                  onPressed: () =>
+                      Navigator.pushNamed(context, 'recuperar_senha'),
                   child: const Text('Esqueceu a senha?'),
                 ),
               ),
@@ -106,7 +135,10 @@ class _LoginViewState extends State<LoginView> {
                     backgroundColor: const Color(0xFF1B3D2F),
                     foregroundColor: Colors.white,
                   ),
-                  child: const Text('Entrar', style: TextStyle(fontSize: 18)),
+                  child: const Text(
+                    'Entrar',
+                    style: TextStyle(fontSize: 18),
+                  ),
                 ),
               ),
               const SizedBox(height: 20),
@@ -116,7 +148,10 @@ class _LoginViewState extends State<LoginView> {
                   const Text("Não possui conta?"),
                   TextButton(
                     onPressed: () => Navigator.pushNamed(context, 'cadastro'),
-                    child: const Text('Cadastre-se', style: TextStyle(fontWeight: FontWeight.bold)),
+                    child: const Text(
+                      'Cadastre-se',
+                      style: TextStyle(fontWeight: FontWeight.bold),
+                    ),
                   ),
                 ],
               ),

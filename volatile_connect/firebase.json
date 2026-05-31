@@ -1,0 +1,37 @@
+{
+  "flutter": {
+    "platforms": {
+      "android": {
+        "default": {
+          "projectId": "covs-fatec",
+          "appId": "1:601179809013:android:6d8c63a45c79ad23fc51bc",
+          "fileOutput": "android/app/google-services.json"
+        }
+      },
+      "dart": {
+        "lib/firebase_options.dart": {
+          "projectId": "covs-fatec",
+          "configurations": {
+            "android": "1:601179809013:android:6d8c63a45c79ad23fc51bc",
+            "ios": "1:601179809013:ios:97db830efa069ef6fc51bc",
+            "web": "1:601179809013:web:bc23ffb8f4e11428fc51bc"
+          }
+        }
+      }
+    }
+  },
+  "hosting": {
+    "public": "build/web",
+    "ignore": [
+      "firebase.json",
+      "**/.*",
+      "**/node_modules/**"
+    ],
+    "rewrites": [
+      {
+        "source": "**",
+        "destination": "/index.html"
+      }
+    ]
+  }
+}
